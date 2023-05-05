@@ -1,24 +1,37 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams, useLoaderData } from "react-router-dom";
 import { getVans } from "../../api";
+
+export function loader() {
+  return getVans();
+}
 
 export const Vans = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [vans, setVans] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // const [vans, setVans] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const vans = useLoaderData();
+  // console.log(data);
 
   const typeFilter = searchParams.get("type");
   // console.log(typeFilter); //null
 
-  useEffect(() => {
-    async function loadVans() {
-      setLoading(true);
-      const data = await getVans();
-      setVans(data);
-      setLoading(false);
-    }
-    loadVans();
-  }, []);
+  // useEffect(() => {
+  //   async function loadVans() {
+  //     setLoading(true);
+  //     try {
+  //       const data = await getVans();
+  //       setVans(data);
+  //     } catch (err) {
+  //       setError(err);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  //   loadVans();
+  // }, []);
 
   const displayedVans = typeFilter
     ? vans.filter((van) => van.type === typeFilter)
@@ -54,8 +67,12 @@ export const Vans = () => {
     });
   }
 
-  if (loading) {
-    return <h1>Loading...</h1>;
+  // if (loading) {
+  //   return <h1>Loading...</h1>;
+  // }
+
+  if (error) {
+    return <h1>There was an error: {error.message}</h1>;
   }
 
   return (
